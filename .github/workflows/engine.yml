@@ -1,0 +1,31 @@
+name: Titan Engine Deployment
+
+on:
+  push:
+    branches:
+      - main
+  # Allows you to run this manually from the Actions tab
+  workflow_dispatch:
+  # Optional: Trigger from Lemon Squeezy or other webhooks
+  repository_dispatch:
+    types: [order_created]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js  # Adjust if you're using Python/Go
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Deploy to Render
+        # This hits your Render Deploy Hook to trigger the engine update
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
